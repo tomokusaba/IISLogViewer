@@ -1,13 +1,9 @@
 ﻿using Microsoft.VisualBasic.FileIO;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
-using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace IISLogViewer
@@ -16,7 +12,6 @@ namespace IISLogViewer
     {
 
         DataTable dt = null;
-        DataSet ds = null;
 
         public Form1()
         {
@@ -47,11 +42,16 @@ namespace IISLogViewer
             dataGridView1.DataSource = dt;
         }
 
+        /// <summary>
+        /// ログファイルを読み込む
+        /// </summary>
+        /// <param name="path">ファイルパス</param>
         private void Read(string path)
         {
             using (StreamReader sr = new StreamReader(@path, Encoding.GetEncoding("Shift_JIS")))
             {
-
+                // 時刻部分にスペースが入っているので
+                // 事前にダブルコーテーションに置換しておく
                 string log = sr.ReadToEnd();
                 log = log.Replace('[', '"');
                 log = log.Replace(']', '"');
@@ -66,8 +66,6 @@ namespace IISLogViewer
                     parser.SetDelimiters(" ");
                     parser.CommentTokens = new String[] { "#" };
 
-
-
                     string[] line = new string[7];
                     while (!parser.EndOfData)
                     {
@@ -75,7 +73,10 @@ namespace IISLogViewer
                         {
                             line = parser.ReadFields();
                         }
-                        catch { }
+                        catch 
+                        {
+                            // 想定外のデータがあった場合読み飛ばす 
+                        }
 
                         EncLine(line);
                     }
@@ -83,6 +84,10 @@ namespace IISLogViewer
             }
         }
 
+        /// <summary>
+        /// 1行分のデータをグリッドビューに表示する
+        /// </summary>
+        /// <param name="line"></param>
         private void EncLine(string[] line)
         {
             DataGridViewRow row = new DataGridViewRow();
@@ -102,6 +107,9 @@ namespace IISLogViewer
             dt.Rows.Add(dr);
         }
 
+        /// <summary>
+        /// グリッドビューの列定義
+        /// </summary>
         private void CrerateDateGrid()
         {
             dataGridView1.Columns.Clear();
