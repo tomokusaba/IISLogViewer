@@ -30,6 +30,12 @@ namespace IISLogViewer
             }
         }
 
+        /// <summary>
+        /// ドラッグ＆ドロップしたときの処理
+        /// メイン処理
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void dataGridView1_DragDrop(object sender, DragEventArgs e)
         {
             dt.Clear();
@@ -140,6 +146,11 @@ namespace IISLogViewer
 
         }
 
+        /// <summary>
+        /// 絞り込み
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void button1_Click(object sender, EventArgs e)
         {
             DataRow[] rows = dt.AsEnumerable().Where(row => row.Field<string>(comboBox1.SelectedItem.ToString()) == textBox1.Text).ToArray();
